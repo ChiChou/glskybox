@@ -68,13 +68,17 @@ class Projector(object):
         if not path.isdir(self.dest):
             mkdir(self.dest)
 
+        subdir = path.join(self.dest, prefix)
+        mkdir(subdir)
+
         directions = Projector.DIRECTIONS
         for name, vec in directions.iteritems():
             self.x, self.y, self.z = vec
             self.draw()
             buf = glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE)
             image = Image.frombytes(mode="RGB", size=(w, h), data=buf)
-            image.save("%s/%s_%s.jpg" % (self.dest, prefix, name))
+            image_name = path.join(subdir, "%s.jpg" % name)
+            image.save(image_name)
 
 
     def init_gl(self):

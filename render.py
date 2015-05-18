@@ -1,3 +1,6 @@
+import shutil
+import time
+
 from os import path, mkdir
 
 from PIL import Image
@@ -17,18 +20,25 @@ class Projector(object):
         'right': (90, 180, 270),
     }
 
-    def __init__(self, size, dest):
+    def __init__(self, size, dest, verbose=False, overwrite=False):
         super(Projector, self).__init__()
 
         self.dest = dest
         self.x, self.y, self.z = 0, 0, 0
         self.w = self.h = size
         self.texture = None
+        self.verbose = True
+        self.overwrite = overwrite
 
         self.init_gl()
 
+    def log(self, msg):
+        if self.verbose:
+            print msg
+
 
     def load_texture(self, f):
+        start = time.time()
         im = Image.open(f)
         # im = im.resize((4096, 2048), Image.ANTIALIAS)
 
@@ -44,32 +54,51 @@ class Projector(object):
             GL_RGB, GL_UNSIGNED_BYTE, buf
         )
 
+        elapsed = time.time() - start
+        self.log('[+] took %fs to load texture' % elapsed)
+
         self.texture = texture
 
 
     def run(self, src):
         if path.isdir(src):
+            self.log('[+] target is a directory: ')
+            self.log(' %s' % src)
             filelist = [path.join(src, filename) for filename in os.listdir(src) 
                 if not filename.startswith('.')]
 
             map(lambda filename: self.run(filename), filelist)
 
         elif path.isfile(src):
+            self.log('[+] processing image: %s' % src)
             self.render(src)
+            self.log('[+] done.')
 
         else:
-            raise ValueError('Invalid source file.')
+            self.log('[!] invalid file: %s' % src)
+
 
     def render(self, filename):
-        self.load_texture(filename)
-        prefix = path.splitext(path.basename(filename))[0]
-        w, h = self.w, self.h
+        prefix, ext = path.splitext(path.basename(filename))
 
         if not path.isdir(self.dest):
             mkdir(self.dest)
 
         subdir = path.join(self.dest, prefix)
+        if path.isdir(subdir):
+            if self.overwrite:
+                self.log('[!] overwriting %s' % subdir)
+                shutil.rmtree(subdir)
+            else:
+                self.log('[!] %s exists, skipping' % subdir)
+                return
+
         mkdir(subdir)
+
+        self.load_texture(filename)
+        w, h = self.w, self.h
+
+        start = time.time()
 
         directions = Projector.DIRECTIONS
         for name, vec in directions.iteritems():
@@ -80,6 +109,8 @@ class Projector(object):
             image_name = path.join(subdir, "%s.jpg" % name)
             image.save(image_name)
 
+        elapsed = time.time() - start
+        self.log('[+] took %fs to render 6 images' % elapsed)
 
     def init_gl(self):
 

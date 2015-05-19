@@ -15,8 +15,8 @@ class Projector(object):
         'top': (180, 180, 0),
         'bottom': (0, 180, 0),
         'front': (90, 180, 0),
-        'back': (90, 180, 180),
         'left': (90, 180, 90),
+        'back': (90, 180, 180),
         'right': (90, 180, 270),
     }
 
@@ -42,7 +42,8 @@ class Projector(object):
         im = Image.open(f)
         # im = im.resize((4096, 2048), Image.ANTIALIAS)
 
-        ix, iy = im.size
+        w, h = im.size
+        exif = im._getexif()
         buf = im.convert("RGB").tostring("raw", "RGB")
 
         texture = glGenTextures(1)
@@ -50,7 +51,7 @@ class Projector(object):
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
 
         glTexImage2D(
-            GL_TEXTURE_2D, 0, 3, ix, iy, 0,
+            GL_TEXTURE_2D, 0, GL_RGB, w, h, 0,
             GL_RGB, GL_UNSIGNED_BYTE, buf
         )
 

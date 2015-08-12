@@ -97,16 +97,12 @@ class Projector(object):
         mkdir(subdir)
 
         self.load_texture(filename)
-        w, h = self.w, self.h
-
         start = time.time()
 
         directions = Projector.DIRECTIONS
         for name, vec in directions.iteritems():
-            self.x, self.y, self.z = vec
-            self.draw()
-            buf = glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE)
-            image = Image.frombytes(mode="RGB", size=(w, h), data=buf)
+            buf = self.rotate(*vec)
+            image = Image.frombytes(mode="RGB", size=(self.w, self.h), data=buf)
             image_name = path.join(subdir, "%s.jpg" % name)
             image.save(image_name)
 
@@ -132,16 +128,19 @@ class Projector(object):
         glMatrixMode(GL_MODELVIEW)
 
 
-    def draw(self):
+    def rotate(self, *args):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
+        
+        glPushMatrix()
 
         glTranslatef(0., 0., 0.)
         glScalef(-1, 1, 1)
         
-        glRotatef(self.x, 1., 0., 0.)
-        glRotatef(self.y, 0., 1., 0.)
-        glRotatef(self.z, 0., 0., 1.)
+        x, y, z = args
+        glRotatef(x, 1., 0., 0.)
+        glRotatef(y, 0., 1., 0.)
+        glRotatef(z, 0., 0., 1.)
 
         glEnable(GL_TEXTURE_2D)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
@@ -160,3 +159,9 @@ class Projector(object):
         gluSphere(Q, 2.0, 100, 100)
 
         glDisable(GL_TEXTURE_2D)
+        
+        buf = glReadPixels(0, 0, self.w, self.h, GL_RGB, GL_UNSIGNED_BYTE)
+        
+        glPopMatrix()
+        
+        return buf

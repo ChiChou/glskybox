@@ -35,7 +35,7 @@ class Projector(object):
 
     def log(self, msg):
         if self.verbose:
-            sys.stderr.write(str(msg))
+            sys.stderr.write(str(msg) + '\n')
 
 
     def load_texture(self, f):
@@ -69,7 +69,7 @@ class Projector(object):
             filelist = [path.join(src, filename) for filename in os.listdir(src) 
                 if not filename.startswith('.')]
 
-            map(lambda filename: self.run(filename), filelist)
+            [self.run(filename) for filename in filelist]
 
         elif path.isfile(src):
             self.log('[+] processing image: %s' % src)

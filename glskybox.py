@@ -17,4 +17,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     projector = Projector(args.size, args.output, True, args.overwrite)
-    (projector.run(source) for source in args.input)
+    [projector.run(source) for source in args.input]

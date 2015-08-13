@@ -1,5 +1,6 @@
 import shutil
 import time
+import sys
 
 from os import path, mkdir
 
@@ -34,7 +35,7 @@ class Projector(object):
 
     def log(self, msg):
         if self.verbose:
-            print msg
+            sys.stderr.write(str(msg))
 
 
     def load_texture(self, f):

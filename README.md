@@ -27,7 +27,7 @@ A simple python tool for converting skysphere texture to skybox.
 
 Example:
 
-Use a photo taken by [PhotoSphere](https://maps.google.com/maps/about/contribute/photosphere/) app, then run:
+Use a photo taken by [PhotoSphere](https://www.google.com/maps/streetview/publish/) app, then run:
 
 `python glskybox.py your_sphere_photo.jpg`
 

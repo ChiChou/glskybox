@@ -45,7 +45,7 @@ class Projector(object):
 
         w, h = im.size
         exif = im._getexif()
-        buf = im.convert("RGB").tostring("raw", "RGB")
+        buf = im.convert("RGB").tobytes("raw", "RGB")
 
         texture = glGenTextures(1)
         glBindTexture(GL_TEXTURE_2D, texture)

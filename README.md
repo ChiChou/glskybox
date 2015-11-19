@@ -7,7 +7,7 @@ A simple python tool for converting skysphere texture to skybox.
 * [PyOpenGL](http://pyopengl.sourceforge.net/) The Python OpenGL Binding
 * [Pillow](https://pypi.python.org/pypi/Pillow) Python Imaging Library
 
-`pip install -r requierments.pip`
+`pip install -r requirements.pip`
 
 ## Usage
 
